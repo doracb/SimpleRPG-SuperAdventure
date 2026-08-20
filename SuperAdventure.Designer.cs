@@ -42,8 +42,8 @@
             btnUseWeapon = new Button();
             btnUsePotion = new Button();
             btnNorth = new Button();
-            button4 = new Button();
-            button5 = new Button();
+            btnEast = new Button();
+            btnSouth = new Button();
             btnWest = new Button();
             rtbLocation = new RichTextBox();
             rtbMessages = new RichTextBox();
@@ -176,25 +176,25 @@
             btnNorth.UseVisualStyleBackColor = true;
             btnNorth.Click += btnNorth_Click;
             // 
-            // button4
+            // btnEast
             // 
-            button4.Location = new Point(573, 457);
-            button4.Name = "button4";
-            button4.Size = new Size(112, 34);
-            button4.TabIndex = 14;
-            button4.Text = "East";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
+            btnEast.Location = new Point(573, 457);
+            btnEast.Name = "btnEast";
+            btnEast.Size = new Size(112, 34);
+            btnEast.TabIndex = 14;
+            btnEast.Text = "East";
+            btnEast.UseVisualStyleBackColor = true;
+            btnEast.Click += btnEast_Click;
             // 
-            // button5
+            // btnSouth
             // 
-            button5.Location = new Point(493, 487);
-            button5.Name = "button5";
-            button5.Size = new Size(112, 34);
-            button5.TabIndex = 15;
-            button5.Text = "South";
-            button5.UseVisualStyleBackColor = true;
-            button5.Click += button5_Click;
+            btnSouth.Location = new Point(493, 487);
+            btnSouth.Name = "btnSouth";
+            btnSouth.Size = new Size(112, 34);
+            btnSouth.TabIndex = 15;
+            btnSouth.Text = "South";
+            btnSouth.UseVisualStyleBackColor = true;
+            btnSouth.Click += btnSouth_Click;
             // 
             // btnWest
             // 
@@ -268,8 +268,8 @@
             Controls.Add(rtbMessages);
             Controls.Add(rtbLocation);
             Controls.Add(btnWest);
-            Controls.Add(button5);
-            Controls.Add(button4);
+            Controls.Add(btnSouth);
+            Controls.Add(btnEast);
             Controls.Add(btnNorth);
             Controls.Add(btnUsePotion);
             Controls.Add(btnUseWeapon);
@@ -309,8 +309,8 @@
         private Button btnUseWeapon;
         private Button btnUsePotion;
         private Button btnNorth;
-        private Button button4;
-        private Button button5;
+        private Button btnEast;
+        private Button btnSouth;
         private Button btnWest;
         private RichTextBox rtbLocation;
         private RichTextBox rtbMessages;

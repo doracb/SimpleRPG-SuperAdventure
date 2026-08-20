@@ -35,12 +35,12 @@ namespace SuperAdventure
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void btnSouth_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void btnEast_Click(object sender, EventArgs e)
         {
 
         }
