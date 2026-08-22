@@ -48,23 +48,10 @@ namespace SuperAdventure
 
         private void MoveTo(Location newLocation)
         {
-            if(newLocation.ItemRequiredToEnter != null)
+            if (!_player.HasRequiredItemToEnterThisLocation(newLocation))
             {
-                bool playerHasRequiredItem = false;
-                foreach(InventoryItem inventoryItem in _player.Inventory)
-                {
-                    if(inventoryItem.Details.ID == newLocation.ItemRequiredToEnter.ID)
-                    {
-                        playerHasRequiredItem = true;
-                        break;
-                    }
-                }
-
-                if(!playerHasRequiredItem)
-                {
-                    rtbMessages.Text += "You must have a " + newLocation.ItemRequiredToEnter.Name + " to enter this location." + Environment.NewLine;
-                    return;
-                }
+                rtbMessages.Text += "You must have a " + newLocation.ItemRequiredToEnter.Name + " to enter this location." + Environment.NewLine;
+                return;
             }
 
             _player.CurrentLocation = newLocation;
@@ -83,71 +70,21 @@ namespace SuperAdventure
 
             if (newLocation.QuestAvailableHere != null)
             {
-                bool playerAlreadyHasQuest = false;
-                bool playerAlreadyCompletedQuest = false;
-
-                foreach (PlayerQuest playerQuest in _player.Quests)
-                {
-                    if (playerQuest.Details.ID == newLocation.QuestAvailableHere.ID)
-                    {
-                        playerAlreadyHasQuest = true;
-
-                        if (playerQuest.IsCompleted)
-                        {
-                            playerAlreadyCompletedQuest = true;
-                        }
-                    }
-                }
+                bool playerAlreadyHasQuest = _player.HasThisQuest(newLocation.QuestAvailableHere);
+                bool playerAlreadyCompletedQuest = _player.CompletedThisQuest(newLocation.QuestAvailableHere);
 
                 if (playerAlreadyHasQuest)
                 {
                     if (!playerAlreadyCompletedQuest)
                     {
-                        bool playerHasAllItemsToCompleteQuest = true;
-
-                        foreach (QuestCompletionItem qci in newLocation.QuestAvailableHere.QuestCompletionItems)
-                        {
-                            bool foundItemInPlayersInventory = false;
-
-                            foreach (InventoryItem ii in _player.Inventory)
-                            {
-                                if (ii.Details.ID == qci.Details.ID)
-                                {
-                                    foundItemInPlayersInventory = true;
-
-                                    if (ii.Quantity < qci.Quantity)
-                                    {
-                                        playerHasAllItemsToCompleteQuest = false;
-                                        break;
-                                    }
-
-                                    break;
-                                }
-                            }
-
-                            if (!foundItemInPlayersInventory)
-                            {
-                                playerHasAllItemsToCompleteQuest = false;
-                                break;
-                            }
-                        }
+                        bool playerHasAllItemsToCompleteQuest = _player.HasAllQuestCompletionItems(newLocation.QuestAvailableHere);
 
                         if (playerHasAllItemsToCompleteQuest)
                         {
                             rtbMessages.Text += Environment.NewLine;
                             rtbMessages.Text += "You complete the '" + newLocation.QuestAvailableHere.Name + "' quest." + Environment.NewLine;
 
-                            foreach (QuestCompletionItem qci in newLocation.QuestAvailableHere.QuestCompletionItems)
-                            {
-                                foreach (InventoryItem ii in _player.Inventory)
-                                {
-                                    if (ii.Details.ID == qci.Details.ID)
-                                    {
-                                        ii.Quantity -= qci.Quantity;
-                                        break;
-                                    }
-                                }
-                            }
+                            _player.RemoveQuestCompletionItems(newLocation.QuestAvailableHere);
 
                             rtbMessages.Text += "You receive: " + Environment.NewLine;
                             rtbMessages.Text += newLocation.QuestAvailableHere.RewardExperiencePoints.ToString() + " experience points" + Environment.NewLine;
@@ -158,34 +95,9 @@ namespace SuperAdventure
                             _player.ExperiencePoints += newLocation.QuestAvailableHere.RewardExperiencePoints;
                             _player.Gold += newLocation.QuestAvailableHere.RewardGold;
 
-                            bool addedItemToPlayerInventory = false;
+                            _player.AddItemToInventory(newLocation.QuestAvailableHere.RewardItem);
 
-                            foreach (InventoryItem ii in _player.Inventory)
-                            {
-                                if (ii.Details.ID == newLocation.QuestAvailableHere.RewardItem.ID)
-                                {
-                                    ii.Quantity++;
-
-                                    addedItemToPlayerInventory = true;
-
-                                    break;
-                                }
-                            }
-
-                            if (!addedItemToPlayerInventory)
-                            {
-                                _player.Inventory.Add(new InventoryItem(newLocation.QuestAvailableHere.RewardItem, 1));
-                            }
-
-                            foreach (PlayerQuest pq in _player.Quests)
-                            {
-                                if (pq.Details.ID == newLocation.QuestAvailableHere.ID)
-                                {
-                                    pq.IsCompleted = true;
-
-                                    break;
-                                }
-                            }
+                            _player.MarkQuestCompleted(newLocation.QuestAvailableHere);
                         }
                     }
                 }
@@ -241,6 +153,17 @@ namespace SuperAdventure
                 btnUsePotion.Visible = false;
             }
 
+            UpdateInventoryListInUI();
+
+            UpdateQuestListInUI();
+
+            UpdateWeaponListInUI();
+
+            UpdatePotionListInUI();
+        }
+
+        private void UpdateInventoryListInUI()
+        {
             dgvInventory.RowHeadersVisible = false;
 
             dgvInventory.ColumnCount = 2;
@@ -257,7 +180,10 @@ namespace SuperAdventure
                     dgvInventory.Rows.Add(new[] { inventoryItem.Details.Name, inventoryItem.Quantity.ToString() });
                 }
             }
+        }
 
+        private void UpdateQuestListInUI()
+        {
             dgvQuests.RowHeadersVisible = false;
 
             dgvQuests.ColumnCount = 2;
@@ -271,7 +197,10 @@ namespace SuperAdventure
             {
                 dgvQuests.Rows.Add(new[] { playerQuest.Details.Name, playerQuest.IsCompleted.ToString() });
             }
+        }
 
+        private void UpdateWeaponListInUI()
+        {
             List<Weapon> weapons = new List<Weapon>();
 
             foreach (InventoryItem inventoryItem in _player.Inventory)
@@ -298,7 +227,10 @@ namespace SuperAdventure
 
                 cboWeapons.SelectedIndex = 0;
             }
+        }
 
+        private void UpdatePotionListInUI()
+        {
             List<HealingPotion> healingPotions = new List<HealingPotion>();
 
             foreach (InventoryItem inventoryItem in _player.Inventory)
