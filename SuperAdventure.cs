@@ -323,18 +323,7 @@ namespace SuperAdventure
             }
             else
             {
-                int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
-
-                rtbMessages.Text += "The " + _currentMonster.Name + " did " + damageToPlayer.ToString() + " points of damage." + Environment.NewLine;
-                _player.CurrentHitPoints -= damageToPlayer;
-
-                lblHitPoints.Text = _player.CurrentHitPoints.ToString();
-
-                if (_player.CurrentHitPoints <= 0)
-                {
-                    rtbMessages.Text += "The " + _currentMonster.Name + " killed you..." + Environment.NewLine;
-                    MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
-                }
+                MonsterAttacks();
             }
         }
 
@@ -360,6 +349,16 @@ namespace SuperAdventure
 
             rtbMessages.Text += "You drink a " + potion.Name + Environment.NewLine;
 
+            MonsterAttacks();
+
+            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+
+            UpdateInventoryListInUI();
+            UpdatePotionListInUI();
+        }
+
+        private void MonsterAttacks()
+        {
             int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
 
             rtbMessages.Text += "The " + _currentMonster.Name + " did " + damageToPlayer.ToString() + " points of damage." + Environment.NewLine;
@@ -372,11 +371,6 @@ namespace SuperAdventure
                 rtbMessages.Text += "The " + _currentMonster.Name + " killed you..." + Environment.NewLine;
                 MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
             }
-
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
-
-            UpdateInventoryListInUI();
-            UpdatePotionListInUI();
         }
     }
 }
