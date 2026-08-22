@@ -286,7 +286,6 @@
             Controls.Add(label1);
             Name = "SuperAdventure";
             Text = "My Game";
-            Load += SuperAdventure_Load;
             ((System.ComponentModel.ISupportInitialize)dgvInventory).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvQuests).EndInit();
             ResumeLayout(false);
